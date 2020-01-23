@@ -23,24 +23,24 @@ class Result {
 
     public static long pilesOfBoxes(List<Integer> boxesInPiles) {
         // Write your code here
-        AtomicLong count = new AtomicLong(0);
-        AtomicLong currentPileSize =  new AtomicLong(0);
-        AtomicLong numberOfPiles =  new AtomicLong(0);
+        long count = 0L;
+        long prevPileSize = 0L;
+        long prevNumberOfStack =  0L;
 
         Map<Integer, Long> pileGroup = new TreeMap<>(Collections.reverseOrder());
         pileGroup.putAll(boxesInPiles.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
-       pileGroup.entrySet().forEach(entry -> {
-           if(currentPileSize.get() == 0){
-               currentPileSize.set(entry.getKey());
-               numberOfPiles.set(entry.getValue());
-           } else {
-               count.getAndAdd((currentPileSize.get() - entry.getKey()) * numberOfPiles.get());
-               currentPileSize.set(entry.getKey());
-               numberOfPiles.set(entry.getValue());
-           }
-       });
-       return count.get();
+        for(Map.Entry<Integer,Long> entry: pileGroup.entrySet()){
+            if(prevPileSize == 0){
+                prevPileSize = entry.getKey();
+                prevNumberOfStack = entry.getValue();
+            } else {
+                count += ((prevPileSize - entry.getKey()) * prevNumberOfStack);
+                prevPileSize = entry.getKey();
+                prevNumberOfStack = entry.getValue();
+            }
+        }
+        return count;
     }
 
 }
